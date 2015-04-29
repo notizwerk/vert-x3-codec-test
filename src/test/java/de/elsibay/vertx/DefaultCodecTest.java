@@ -32,8 +32,8 @@ public class DefaultCodecTest {
 	public void testDefaultCodec(TestContext context) {
 		
 		MessageCodec extJsonObjectCodec = new ExtendedJsonObjectCodec();
-		
 		vertx.eventBus().registerDefaultCodec(ExtendedJsonObject.class, extJsonObjectCodec);
+
 		vertx.eventBus().consumer("consumer",(Message<ExtendedJsonObject> msg) -> {
 			logger.info("received ExtendedJsonObject");
 			context.assertEquals(msg.body().getClass().getName(), ExtendedJsonObject.class.getName());
@@ -42,12 +42,15 @@ public class DefaultCodecTest {
 		
 		Async replyAsync = context.async();
 		ExtendedJsonObject request = new ExtendedJsonObject();
-		DeliveryOptions dop = new DeliveryOptions().setSendTimeout(1000);
+		DeliveryOptions dop = new DeliveryOptions().setSendTimeout(2000);
 		vertx.eventBus().send("consumer",request, dop,(AsyncResult<Message<ExtendedJsonObject>> asyncResult ) -> {
 			logger.info("received reply");
-			ExtendedJsonObject extJsonObj = asyncResult.result().body();
-			context.assertNotNull(extJsonObj);
-			context.assertEquals(extJsonObj.getStatus(),"OK");
+			context.assertTrue(asyncResult.succeeded(),"reply should be successfull");
+			if ( asyncResult.succeeded() ) { 
+				ExtendedJsonObject extJsonObj = asyncResult.result().body();
+				context.assertNotNull(extJsonObj,"reply message body should be not null");
+				context.assertEquals(extJsonObj.getStatus(),"OK");
+			}
 			replyAsync.complete();
 		});
 

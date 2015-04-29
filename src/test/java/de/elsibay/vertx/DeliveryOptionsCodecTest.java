@@ -40,13 +40,16 @@ public class DeliveryOptionsCodecTest {
 		});
 		
 		Async replyAsync = context.async();
-		
 		ExtendedJsonObject request = new ExtendedJsonObject();
-		vertx.eventBus().send("consumer",request, deliveryOptions, (AsyncResult<Message<ExtendedJsonObject>> asyncResult ) -> {
+		DeliveryOptions dop = new DeliveryOptions().setSendTimeout(2000);
+		vertx.eventBus().send("consumer",request, dop,(AsyncResult<Message<ExtendedJsonObject>> asyncResult ) -> {
 			logger.info("received reply");
-			ExtendedJsonObject extJsonObj = asyncResult.result().body();
-			context.assertNotNull(extJsonObj);
-			context.assertEquals(extJsonObj.getStatus(),"OK");
+			context.assertTrue(asyncResult.succeeded(),"reply should be successfull");
+			if ( asyncResult.succeeded() ) { 
+				ExtendedJsonObject extJsonObj = asyncResult.result().body();
+				context.assertNotNull(extJsonObj,"reply message body should be not null");
+				context.assertEquals(extJsonObj.getStatus(),"OK");
+			}
 			replyAsync.complete();
 		});
 
