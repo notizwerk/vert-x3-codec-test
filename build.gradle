@@ -21,7 +21,7 @@ repositories {
     //   http://www.gradle.org/docs/current/userguide/dependency_management.html#sec:repositories
 }
 
-def vertx3version = "3.0.0-milestone4"
+def vertx3version = "3.0.0-milestone5"
 
 dependencies {
     compile 'org.slf4j:slf4j-api:1.7.10'
@@ -35,5 +35,5 @@ dependencies {
 }
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '2.0'
+    gradleVersion = '2.4'
 }

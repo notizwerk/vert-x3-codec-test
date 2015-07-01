@@ -31,7 +31,7 @@ public class DeliveryOptionsCodecTest {
 	@Test
 	public void testDeliveryOptionsCodec(TestContext context) {
 		MessageCodec extJsonObjectCodec = new ExtendedJsonObjectCodec();
-		DeliveryOptions deliveryOptions = new DeliveryOptions().setCodecName(extJsonObjectCodec.name());
+		DeliveryOptions deliveryOptions = new DeliveryOptions().setCodecName(new ExtendedJsonObjectCodec().name());
 		vertx.eventBus().registerCodec(extJsonObjectCodec);
 		
 		vertx.eventBus().consumer("consumer",(Message<ExtendedJsonObject> msg) -> {
@@ -42,7 +42,7 @@ public class DeliveryOptionsCodecTest {
 		Async replyAsync = context.async();
 		ExtendedJsonObject request = new ExtendedJsonObject();
 		DeliveryOptions dop = new DeliveryOptions().setSendTimeout(2000);
-		vertx.eventBus().send("consumer",request, dop,(AsyncResult<Message<ExtendedJsonObject>> asyncResult ) -> {
+		vertx.eventBus().send("consumer",request, deliveryOptions,(AsyncResult<Message<ExtendedJsonObject>> asyncResult ) -> {
 			logger.info("received reply");
 			context.assertTrue(asyncResult.succeeded(),"reply should be successfull");
 			if ( asyncResult.succeeded() ) { 
